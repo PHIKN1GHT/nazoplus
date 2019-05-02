@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block stylesheets %}
+{{ super() }}
+    <link href="/static/assets/css/entry.css" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <div class="ui small modal">
+        <div class="content">
+            <form class="ui form" style="padding:10px" method="post" action="/login">
+                <div class="two fields">
+                  <div class="field">
+                    <label>邮箱</label>
+                    <input type="email" name="email" placeholder="someone@example.org">
+                  </div>
+                  <div class="field">
+                    <label>显示名</label>
+                    <input type="text" name="nickname" placeholder="(留空使用邮箱名/不修改)">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>密码</label>
+                  <input type="password" name="password" placeholder="设置一个密码/填写您上次用的密码">
+                </div>
+                <div class="field">
+                  <div class="ui checkbox">
+                    <input type="checkbox" name="accept_terms" tabindex="0">
+                    <label>我已阅读并同意本网站的<a href="/static/eula.html">用户协议</a>。</label>
+                  </div>
+                </div>
+                <button class="ui teal button" type="submit"><i class="sync icon"></i>同步进度</button>
+              </form>
+        </div>
+    </div>
+  <div class="ui inverted teal vertical masthead center aligned segment" style="height:100%;background-color: #5464bd !important;margin: auto;height: 100%;display: flex;flex-direction: column;align-items: center;justify-content: center;">
+  <div class="ui container">
+    <div class="ui centered text container">
+      <h1 class="ui inverted header">
+        謎.Plus
+      </h1>
+      <h2>解决「謎」题吧</h2>
+    </div>
+<div class="ui teal inverted vertical footer segment" style="background-color: #5464bd !important;">
+<div class="ui massive buttons" style="margin-top: 1em; margin-bottom: 0em;background-color: #5464bd !important;">
+  <a href="/anonymous"><button class="ui button">匿名试玩</button></a>
+  <div class="or"></div>
+  <button class="ui positive button" onclick="$('.ui.modal').modal('show');">注册登录</button>
+</div>
+</div>
+    
+  </div>
+  </div>
+
+{% endblock %}
+
+{% block post_body_javascripts %}
+  <script>
+    $('#levels_progress').progress({
+      label: 'ratio',
+      text: {
+        ratio: '{value} / {total}'
+      },
+      showActivity: false
+    });
+    $('.ui.form').form({
+    fields: {
+      email           : 'empty',
+      password        : ['minLength[6]', 'empty'],
+      accept_terms    : 'checked'
+    }
+  });
+  $('.table').tablesort();
+  </script>
+  
+{% endblock %}

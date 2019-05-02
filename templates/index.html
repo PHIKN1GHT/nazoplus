@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block stylesheets %}
+{{ super() }}
+    <link href="/static/assets/css/index.css" rel="stylesheet">
+{% endblock %}
+{% block javascripts %}
+{{ super() }}
+    <script src="/static/assets/js/tablesort.js"></script>
+{% endblock %}
+
+{% block header %}
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <div class="ui inverted teal vertical masthead center aligned segment">
+
+    <div class="ui container">
+      <div class="ui large secondary menu">
+        <div class="right item">
+          <a class="ui inverted button" href="/logout">退出登录</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui text container">
+      <h1 class="ui inverted header">
+        謎.Plus
+      </h1>
+      {% if user.nickname == 'Anonymous'%}
+      <h2>欢迎回来，「 {{user.nickname}} {{user.email[0:8]}}」！</h2>
+      <p>注意：匿名用户的登录状态会在一段时间后失效，因此您的进度将不会被保存，并且您的成绩将不会参与排名！</p>
+      {% elif user.nickname|length == 0 %}
+      <h2>欢迎回来，「 {{user.email}} 」！</h2>
+      {% else %}
+      <h2>欢迎回来，「 {{user.nickname}} 」！</h2>
+      {% endif %}
+    </div>
+
+  </div>
+{% endblock %}
+
+{% block main %}
+<div class="ui main container">
+    <div class="ui two column stackable grid container">
+      <div class="twelve wide left floated column" style="margin-right: 1em;">
+        <div class="ui three column middle aligned grid">
+          <div class="eleven wide left floated column">
+            <div class="ui green progress" id="puzzle_progress" data-value="{{user.passed|length}}" data-total="{{puzzles|length-1}}">
+              <div class="bar" style="transition-duration: 300ms; width: {{(user.passed|length)*100/(puzzles|length-1)}}%;">
+                <div class="progress">{{user.progress}}</div>
+              </div>
+              <div class="label">关卡进度</div>
+            </div>
+          </div>
+          <div class="two wide right floated column">
+            <div class="ui small statistic">
+              <div class="value">{{user.credit}}</div>
+              <div class="label">积分</div>
+            </div>
+          </div>
+          <div class="two wide right floated column">
+            <div class="ui small statistic">
+              <div class="value">{{user.rank}}</div>
+              <div class="label">排名</div>
+            </div>
+          </div>
+        </div>
+        
+        <h2 class="ui horizontal header divider">关卡列表</h2>
+        <table class="ui very basic unstackable sortable padded table">
+          <thead>
+            <tr>
+              <th class="collapsing"></th>
+              <th class="collapsing">关卡</th>
+              <th class="center aligned">标题</th>
+              <th class="center aligned collapsing">通过率</th>
+            </tr>
+          </thead>
+          <tbody>
+           {% for puzzle in puzzles %}
+            <tr>
+              <td data-sort-value="{{puzzle.unlock_score}}">
+                {% if puzzle.id in user.passed %}<i class="large green check icon"></i>{% endif %}
+                {% if puzzle.id not in user.passed and user.credit < puzzle.unlock_score %}
+                  <div class="ui icon" data-tooltip="{{puzzle.unlock_score}} 点积分解锁" data-inverted="inverted"><i class="large lock icon"></i></div>
+                {% endif %}
+              </td>
+              <td>{{puzzle.id}}</td>
+              <td class="center aligned">
+                <a href="puzzle/{{puzzle.id}}"}>{{puzzle.name}}</a>
+              </td>
+              <td class="right aligned">{{puzzle.passed_num}}/{{puzzle.tried_num}}({{puzzle.getPassRate()}})</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="three wide right floated column"  style="margin-left: 1em;">
+        <h2 class="ui dividing header">排行榜</h2>
+        <table class="ui very unstackable basic table">
+          <tbody>
+            {% for user in top10 %}
+            <tr>
+              <td class="collapsing">{{ loop.index }}</td>
+              {% if user.nickname|length == 0 %}
+              <td><strong>{{user.email}}</strong></td>
+              {% else %}
+              <td><strong>{{user.nickname}}</strong></td>
+              {% endif %}
+              <td>{{user.credit}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  <div class="ui teal inverted vertical footer segment">
+    <div class="ui container">
+      <div class="ui stackable inverted divided equal height stackable grid">
+        <div class="three wide column">
+          <h4 class="ui inverted header">链接</h4>
+          <div class="ui inverted link list">
+            <a href="/static/eula.html" class="item">用户协议</a>
+          </div>
+        </div>
+
+        <div class="twelve wide column">
+          <h4 class="ui inverted header">关于</h4>
+          <p>这是一个<a href="https://github.com/kale1d0">咸鱼</a>两天内编写出的开源框架，创意与界面设计部分参考了<a href="https://nazo.games/">「謎.Games」</a>与<a href="https://nazo.io/">「謎.Io」</a>。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('#levels_progress').progress({
+      label: 'ratio',
+      text: {
+        ratio: '{value} / {total}'
+      },
+      showActivity: false
+    });
+    $('.ui.form').form({
+    fields: {
+      email           : 'empty',
+      password        : ['minLength[6]', 'empty'],
+      accept_terms    : 'checked'
+    }
+  });
+  $('.table').tablesort();
+  </script>
+{% endblock %}
