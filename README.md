@@ -2,7 +2,7 @@
 
 A simple platform for holding Nazo games. 
 
-Demo is [Here](https://nazo.plus/)
+Demo is ~[Here](https://nazo.plus/)~(Stop maintaining. If you need original puzzles, contact me please.)
 
 # ENVIRONMENT
 
